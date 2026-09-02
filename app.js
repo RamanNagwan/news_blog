@@ -4,6 +4,7 @@ import dbConnection from './config/mongoDB.js';
 import path from 'path';
 import { fileURLToPath } from "url";
 import adminRoute from './routes/admin.js';
+import expressEjsLayouts from 'express-ejs-layouts';
 
 //dotenv config
 env.config()
@@ -18,13 +19,16 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Express ejs Layout
+app.use(expressEjsLayouts);
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 app.set('view engine', 'ejs');
 
-app.use(express.static(path.join(__dirname, "public")));
 
-app.use('/api',adminRoute);
+app.use('/api', adminRoute);
 
 app.listen(port, () => {
     console.log(`http://localhost:${port}`);

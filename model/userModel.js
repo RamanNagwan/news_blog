@@ -2,27 +2,32 @@ import mongoose from "mongoose";
 import bcrypt from 'bcrypt';
 
 const schema = mongoose.Schema({
-    fullname :{
-        type : String,
-        required : true
-    }, 
-    username :{
+    fullname: {
         type: String,
-        required : true
+        required: true
     },
-    password : {
-        type : String,
-        required : true
+    username: {
+        type: String,
+        required: true
     },
-    role : {
-        type : String,
-        enum : ['admin', 'author'],
-        default : "author",
-        required : true
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    role: {
+        type: String,
+        enum: ['admin', 'author'],
+        default: "author",
+        required: true
     }
 });
 
-schema.pre('save',function(next){
+schema.pre('save', function (next) {
     const haspassword = bcrypt.hash(password, 10);
     console.log(haspassword);
     next()
