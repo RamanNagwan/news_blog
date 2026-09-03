@@ -7,7 +7,7 @@
         <h1 class="admin-heading"><i class="fa fa-users"></i> All Users</h1>
       </div>
       <div class="col-md-2">
-        <a class="add-new" href="add-user.html">add user</a>
+        <a class="add-new" href="/api/admin/add-user">add user</a>
       </div>
       <div class="col-md-12">
         <table id="user-table" class="content-table"></table>
@@ -32,7 +32,6 @@
 </div>
 <script>
   let users = '<%-JSON.stringify(users || []) %>';
-
   document.addEventListener("DOMContentLoaded", function () {
     const table = new Tabulator("#user-table", {
       data: users,
@@ -41,11 +40,11 @@
       paginationSize: 7,
       columns: [
         { title: "Full Name", field: "fullname", headerFilter: "input" },
-        { title: "User Name", filed: "username", headerFilter: "input" },
+        { title: "User Name", field: "username", headerFilter: "input" },
         { title: "Role", field: "role", headerFilter: "input" },
         {
           title: "Action", formatter: function (cell, formatterParams, onRendered) {
-            return `<a class="btn btn-sm btn-warning" href="/admin/update-user/${cell.getData()._id}"> Edit</a>
+            return `<a class="btn btn-sm btn-warning" href="/api/admin/update-user/${cell.getData()._id}"> Edit</a>
           <button type="button" onclick="deleteUser('${cell.getData()._id}')" class="btn btn-sm btn-danger">Delete</button>`
           }
         }
@@ -53,10 +52,13 @@
     });
   })
 
-  function deleteUser(id){
-    window.location.href = `/api/admin/delete/${id}`;
+  // delete user
+  async function deleteUser(id) {
+    const response = await fetch(`/api/admin/delete-user/${id}`, {
+      method: 'DELETE'
+    })
+    if (response.ok) {
+      window.location.reload();
+    }
   }
-
-  
-
 </script>

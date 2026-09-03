@@ -10,11 +10,6 @@ const schema = mongoose.Schema({
         type: String,
         required: true
     },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
     password: {
         type: String,
         required: true
@@ -27,10 +22,9 @@ const schema = mongoose.Schema({
     }
 });
 
-schema.pre('save', function (next) {
-    const haspassword = bcrypt.hash(password, 10);
-    console.log(haspassword);
-    next()
+schema.pre('save', async function () {
+    if (!this.isModified(`password`)) return next();
+    this.password = await bcrypt.hash(this.password, 10);
 })
 
 const User = mongoose.model("User", schema);
