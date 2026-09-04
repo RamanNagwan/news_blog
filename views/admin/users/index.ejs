@@ -11,7 +11,7 @@
       </div>
       <div class="col-md-12">
         <table id="user-table" class="content-table"></table>
-        <nav>
+        <!-- <nav>
           <ul class="pagination">
             <li class="page-item disabled">
               <a class="page-link">Previous</a>
@@ -25,19 +25,22 @@
               <a class="page-link" href="#">Next</a>
             </li>
           </ul>
-        </nav>
+        </nav> -->
       </div>
     </div>
   </div>
 </div>
 <script>
-  let users = '<%-JSON.stringify(users || []) %>';
+
+  let users = '<%-JSON.stringify(users) %>';
   document.addEventListener("DOMContentLoaded", function () {
     const table = new Tabulator("#user-table", {
       data: users,
       layout: "fitColumns",      //fit columns to width of table
       responsiveLayout: "hide",
-      paginationSize: 7,
+      pagination: true,
+      paginationSize: 10,
+      paginationSizeSelector: [15, 20, 50, 100],
       columns: [
         { title: "Full Name", field: "fullname", headerFilter: "input" },
         { title: "User Name", field: "username", headerFilter: "input" },
@@ -54,11 +57,13 @@
 
   // delete user
   async function deleteUser(id) {
-    const response = await fetch(`/api/admin/delete-user/${id}`, {
-      method: 'DELETE'
-    })
-    if (response.ok) {
-      window.location.reload();
+    if (confirm('Are you sure')) {
+      const response = await fetch(`/api/admin/delete-user/${id}`, {
+        method: 'DELETE'
+      })
+      if (response.ok) {
+        window.location.reload();
+      }
     }
   }
 </script>

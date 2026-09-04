@@ -1,5 +1,6 @@
 import { json } from "express";
 import User from "../model/userModel.js";
+import bcrypt from 'bcrypt';
 
 export const getUsers = async (req, res) => {
     try {
@@ -31,21 +32,36 @@ export const addUserPost = (req, res) => {
 export const deleteUser = async (req, res) => {
     try {
         const user = await User.findByIdAndDelete(req.params.id);
-          res.sendStatus(200);
-    }catch(err){
-        res.status(500).json({message : `Error deleteing user ${err}`})
+        res.sendStatus(200);
+    } catch (err) {
+        res.status(500).json({ message: `Error deleteing user ${err}` })
     }
 }
 
-export const updateUser=async (req,res)=>{
-    try{
-        const user =await User.findById(req.params.id);
-        if(!user) res.status(404).json({message : 'User not found'});
-        res.render('admin/users/update',{
-            layout : 'admin/layout',
+export const updateUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) res.status(404).json({ message: 'User not found' });
+        res.render('admin/users/update', {
+            layout: 'admin/layout',
             user
         })
-    }catch(err){
-        res.status(500).json({message : `Error updating user ${err}`});
+    } catch (err) {
+        res.status(500).json({ message: `Error updating user form ${err}` });
     }
 }
+
+export const updatePost = async (req, res) => {
+    try {
+        const { fullname, password, role } = req.body;
+        const hasPassword = await bcrypt.hash(password, 10);
+        const user = await User.findByIdAndUpdate(req.params.id, {
+            fullname: fullname,
+            password: hasPassword,
+            role: role
+        });
+        res.redirect('/api/admin/users');
+    } catch (err) {
+        res.status(500).json({ message: `Error update user` });
+    }
+} 
