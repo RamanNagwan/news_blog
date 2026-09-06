@@ -1,6 +1,70 @@
 import { json } from "express";
 import User from "../model/userModel.js";
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import cookieParser from 'cookie-parser'
+
+export const dashboard = (req, res) => {
+    res.render('admin/dashboard', {
+        layout: 'admin/layout',
+        role: req.role
+    })
+}
+
+export const login = (req, res) => {
+    try {
+        res.render('admin/login', {
+            layout: false,
+        });
+    } catch (err) {
+        res.status(500).json({ message: `Login error ${err}` });
+    }
+}
+
+// login
+export const loginPost = async (req, res) => {
+    try {
+
+        const user = await User.findOne({ username: req.body.username });
+
+        if (!user) return res.status(404).json({ message: `User not found` });
+
+        const isMatch = await bcrypt.compare(req.body.password, user.password);
+
+        if (!isMatch) return res.status(404).json({ message: `Password not match` });
+
+        const token = jwt.sign({
+            role: user.role,
+            userId: user._id,
+            username: user.username,
+            fullname: user.fullname
+        }, process.env.JWT_SECRET,
+            { expiresIn: "1d" });
+
+        if (!token) return res.status(404).json({ message: `Token not set` });
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            sameSite: "strict",
+            maxAge: 24 * 60 * 60 * 1000
+        });
+
+        res.render('admin/dashboard', { layout: 'admin/layout', role: user.role });
+
+    } catch (err) {
+        res.status(500).json({ message: `Login error : ${err}` });
+    }
+}
+
+// logOut 
+export const logout = (req, res) => {
+    try {
+        res.clearCookie("token");
+        res.redirect('/api/login');
+    } catch (err) {
+        res.status(500).json({ message: `Internal server error : ${err}` });
+    }
+}
 
 export const getUsers = async (req, res) => {
     try {
@@ -13,7 +77,7 @@ export const getUsers = async (req, res) => {
 
 export const addUser = (req, res) => {
     try {
-        res.render('admin/users/create', { layout: "admin/layout" });
+        res.render('admin/users/create', { layout: "admin/layout", role: req.role });
     } catch (err) {
         res.status(500).json({ message: `Internal server error ${err}` });
     }
@@ -23,7 +87,10 @@ export const addUserPost = (req, res) => {
     try {
         const user = User.create(req.body);
         if (!user) return res.status(204).json({ message: `User not save` });
-        res.redirect('/api/admin/users');
+        res.render('admin/dashboard',{
+            layout : 'admin/layout',
+            role : req.role
+        });
     } catch (err) {
         res.status(500).json({ message: `Internal server error ${err}` });
     }

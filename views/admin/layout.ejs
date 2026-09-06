@@ -27,14 +27,20 @@
             <div class="row">
                 <!-- LOGO -->
                 <div class="col-md-2 me-auto">
-                    <a href="dashboard.html"><img class="logo" src="/images/news.jpg" alt="Logo"></a>
+                    <a href="/api/dashboard"><img class="logo" src="/images/news.jpg" alt="Logo"></a>
                 </div>
                 <!-- /LOGO -->
                 <!-- LOG-Out -->
                 <div class="col-md-2">
-                    <a href="logout.html" class="admin-logout">
-                        <i class="fa fa-sign-out"></i> logout
-                    </a>
+                    <% if(role){ %>
+                        <a href="/api/logout" class="admin-logout">
+                            <i class="fa fa-sign-out"></i> Logout
+                        </a>
+                    <% }else{%>
+                        <a href="/api/login" class="admin-logout">
+                            <i class="fa fa-sign-out"></i> login
+                        </a>
+                    <%}%>
                 </div>
                 <!-- /LOG-Out -->
             </div>
@@ -48,23 +54,26 @@
                 <div class="col-md-12">
                     <ul class="admin-menu">
                         <li>
-                            <a href="dashboard.html">Home admin </a>
+                            <a href="/api/dashboard">Home admin </a>
                         </li>
                         <li>
                             <a href="article.html">Article</a>
                         </li>
                         <li>
-                            <a href="category.html">Category</a>
-                        </li>
-                        <li>
-                            <a href="users.html">Users</a>
-                        </li>
-                        <li>
                             <a href="comments.html">Comments</a>
                         </li>
-                        <li>
-                            <a href="settings.html">Settings</a>
-                        </li>
+                        <% if(role==='admin' ){%>
+                            <li>
+                                <a href="category.html">Category</a>
+                            </li>
+                            <li>
+                                <a href="/api/admin/add-user">Users</a>
+                            </li>
+                            <li>
+                                <a href="settings.html">Settings</a>
+                            </li>
+                            <%}%>
+
                     </ul>
                 </div>
             </div>
