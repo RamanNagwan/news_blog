@@ -1,0 +1,51 @@
+<div id="admin-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10">
+                <h1 class="admin-heading"><i class="fa fa-gears"></i> All Categories</h1>
+            </div>
+            <div class="col-md-2">
+                <a class="add-new" href="add-category.html">add category</a>
+            </div>
+            <div class="col-md-12">
+                <table id="categoryTable"></table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const categoryData = '<%- JSON.stringify(categories) %>';
+    document.addEventListener('DOMContentLoaded', () => {
+        const table = new Tabulator('#categoryTable', {
+            data: categoryData,
+            layout: "fitColumns",
+            responsiveLayout: "hide",
+            pagination: true,
+            paginationMode: "local",
+            paginationSize: 10,
+            paginationSizeSelector: [25, 50, 100],
+            columns: [
+                { title: 'name', field: 'name' },
+                { title: 'slug', field: 'slug' },
+                {
+                    title: 'action', formatter: function (cell) {
+                        return `<a class="btn btn-sm btn-warning" href="/api/admin/category/${cell.getData()._id}">Edit</a>
+                    <button class="btn btn-sm btn-danger" type="button" onclick="deleteCategory('${cell.getData()._id}')")>Delet</button>`
+                    }
+                }
+            ]
+        })
+    });
+
+    async function deleteCategory(id) {
+        if (confirm('Are you sure to Delete')) {
+            const response =await fetch(`/api/admin/delete-category/${id}`, {
+                method: 'DELETE'
+            })
+            if (response.ok) {
+                window.location.reload()
+            }
+        }
+    }
+
+</script>

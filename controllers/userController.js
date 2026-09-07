@@ -69,7 +69,7 @@ export const logout = (req, res) => {
 export const getUsers = async (req, res) => {
     try {
         const users = await User.find();
-        res.render('admin/users/index', { layout: "admin/layout", users });
+        res.render('admin/users/index', { layout: "admin/layout", users, role: req.role });
     } catch (err) {
         res.status(500), json({ message: `Internal server error ${err}` })
     }
@@ -87,9 +87,9 @@ export const addUserPost = (req, res) => {
     try {
         const user = User.create(req.body);
         if (!user) return res.status(204).json({ message: `User not save` });
-        res.render('admin/dashboard',{
-            layout : 'admin/layout',
-            role : req.role
+        res.render('admin/dashboard', {
+            layout: 'admin/layout',
+            role: req.role
         });
     } catch (err) {
         res.status(500).json({ message: `Internal server error ${err}` });

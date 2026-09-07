@@ -1,15 +1,5 @@
-import {
-    getUsers,
-    addUser,
-    addUserPost,
-    deleteUser,
-    updateUser,
-    updatePost,
-    login,
-    loginPost,
-    logout,
-    dashboard
-} from '../controllers/userController.js';
+import { getUsers, addUser, addUserPost, deleteUser, updateUser, updatePost, login, loginPost, logout, dashboard } from '../controllers/userController.js';
+import { getCategories } from '../controllers/categoryController.js';
 import express from 'express';
 import isLoggedIn from '../middleware/isLoogedIn.js';
 import isAdmin from '../middleware/isAdmin.js';
@@ -25,6 +15,9 @@ router.delete('/admin/delete-user/:id', isLoggedIn, isAdmin, deleteUser);
 router.get('/admin/update-user/:id', isLoggedIn, isAdmin, updateUser);
 router.post('/admin/update-user/:id', isLoggedIn, isAdmin, updatePost);
 router.get('/dashboard', isLoggedIn, dashboard);
+
+// Category Routes
+router.get('/admin/category', getCategories);
 
 // Login and Logout 
 router.get('/login', login);
