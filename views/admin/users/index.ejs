@@ -27,14 +27,15 @@
       paginationSize: 10,
       paginationSizeSelector: [15, 20, 50, 100],
       columns: [
-        { title: "Full Name", field: "fullname", headerFilter: "input" },
-        { title: "User Name", field: "username", headerFilter: "input" },
-        { title: "Role", field: "role", headerFilter: "input" },
+        { title: 'S.No.', formatter: "rownum", hozAlign: "center", width: "6%" },
+        { title: "Full Name", field: "fullname", headerFilter: "input",hozAlign: "center" },
+        { title: "User Name", field: "username", headerFilter: "input" ,hozAlign: "center"},
+        { title: "Role", field: "role", headerFilter: "input", hozAlign: "center" },
         {
           title: "Action", formatter: function (cell, formatterParams, onRendered) {
             return `<a class="btn btn-sm btn-warning" href="/api/admin/update-user/${cell.getData()._id}"> Edit</a>
           <button type="button" onclick="deleteUser('${cell.getData()._id}')" class="btn btn-sm btn-danger">Delete</button>`
-          }
+          },hozAlign: "center"
         }
       ]
     });

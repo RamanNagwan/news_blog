@@ -4,13 +4,14 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser'
 
+// dashboard
 export const dashboard = (req, res) => {
     res.render('admin/dashboard', {
         layout: 'admin/layout',
         role: req.role
     })
 }
-
+// login render
 export const login = (req, res) => {
     try {
         res.render('admin/login', {
@@ -24,7 +25,12 @@ export const login = (req, res) => {
 // login
 export const loginPost = async (req, res) => {
     try {
-
+        // await User.create({
+        //     fullname:"nagwan",
+        //     password:"123456",
+        //     username:"nagwan",
+        //     role:"admin"
+        // });
         const user = await User.findOne({ username: req.body.username });
 
         if (!user) return res.status(404).json({ message: `User not found` });

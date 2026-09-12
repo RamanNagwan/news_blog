@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import slugify from 'slugify';
 
-const schema = mongoose.Schema({
+const categorySchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -17,11 +17,12 @@ const schema = mongoose.Schema({
     }
 });
 
-const Category = mongoose.model('categories', schema);
+const Category = mongoose.model('Category', categorySchema);
 
-schema.pre('validate', async function () {
-    const slug = this.slug = slugify(this.name, "_");
+categorySchema.pre('validate', async function () {
+    const slug = this.slug = slugify(this.name, { lower: true });
     console.log(slug)
 });
+
 
 export default Category;

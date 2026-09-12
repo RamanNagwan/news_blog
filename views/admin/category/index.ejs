@@ -5,7 +5,7 @@
                 <h1 class="admin-heading"><i class="fa fa-gears"></i> All Categories</h1>
             </div>
             <div class="col-md-2">
-                <a class="add-new" href="add-category.html">add category</a>
+                <a class="add-new" href="/api/admin/add-category">add category</a>
             </div>
             <div class="col-md-12">
                 <table id="categoryTable"></table>
@@ -14,7 +14,9 @@
     </div>
 </div>
 <script>
+
     const categoryData = '<%- JSON.stringify(categories) %>';
+
     document.addEventListener('DOMContentLoaded', () => {
         const table = new Tabulator('#categoryTable', {
             data: categoryData,
@@ -25,13 +27,14 @@
             paginationSize: 10,
             paginationSizeSelector: [25, 50, 100],
             columns: [
-                { title: 'name', field: 'name' },
-                { title: 'slug', field: 'slug' },
+                { title: 'S.No.', formatter: "rownum", hozAlign: "center", width: "6%" },
+                { title: 'name', field: 'name', hozAlign: "center" },
+                { title: 'slug', field: 'slug', hozAlign: "center" },
                 {
-                    title: 'action', formatter: function (cell) {
-                        return `<a class="btn btn-sm btn-warning" href="/api/admin/category/${cell.getData()._id}">Edit</a>
+                    title: 'action', formatter: function (cell, formatterParams, onRendered) {
+                        return `<a class="btn btn-sm btn-warning" href="/api/admin/update-category/${cell.getData()._id}">Edit</a>
                     <button class="btn btn-sm btn-danger" type="button" onclick="deleteCategory('${cell.getData()._id}')")>Delet</button>`
-                    }
+                    }, hozAlign: "center"
                 }
             ]
         })
@@ -39,7 +42,7 @@
 
     async function deleteCategory(id) {
         if (confirm('Are you sure to Delete')) {
-            const response =await fetch(`/api/admin/delete-category/${id}`, {
+            const response = await fetch(`/api/admin/delete-category/${id}`, {
                 method: 'DELETE'
             })
             if (response.ok) {
