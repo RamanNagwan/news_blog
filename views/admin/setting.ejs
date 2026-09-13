@@ -1,0 +1,42 @@
+<div id="admin-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="admin-heading"><i class="fa fa-cog"></i> Settings</h1>
+            </div>
+            <div class="col-md-6 mx-auto">
+                <div class="card">
+                    <h5 class="card-header">Settings</h5>
+                    <div class="card-body">
+                        <form action="/api/admin/setting" method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Website Title</label>
+                                <% if(!setting.title || setting.title.trim() == '') {%>
+                                    <input type="text" name="title" class="form-control" autocomplete="off" required="">
+                                    <% }else{ %>
+                                        <input type="text" name="title" value="<%= setting.title %>" class="form-control" autocomplete="off" required="">
+                                    <%} %>
+                            </div>
+                            <div class="mb-3">
+                                <label for="logo" class="form-label">Upload Logo</label>
+                                <% if(setting.logo ){ %>
+                                    <img src="/uploads/<%=setting.logo %>" class="mb-3 w-25 h-25" />
+                                    <%} %>
+                                <input type="file" name="logo" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="footer" class="form-label">Footer Description</label>
+                                <% if(!setting.footer || setting.footer.trim() == '' ) {%>
+                                <input type="text" name="footer" class="form-control" autocomplete="off" required="">
+                                <% }else{ %>
+                                    <input type="text" name="footer" value="<%=setting.footer%>" class="form-control" autocomplete="off" required="">
+                              <%  } %>
+                            </div>
+                            <input type="submit" name="submit" class="btn btn-primary" value="Save" required="">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

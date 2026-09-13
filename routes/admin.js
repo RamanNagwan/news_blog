@@ -4,7 +4,8 @@ import isAdmin from '../middleware/isAdmin.js';
 
 import { getUsers, addUser, addUserPost, deleteUser, updateUser, updatePost, login, loginPost, logout, dashboard } from '../controllers/userController.js';
 import { addCategory, addedcategory, deleteCategory, getCategories, updateCategory, updateCategoryPost } from '../controllers/categoryController.js';
-import { allArtical, addArtical, addedArtical } from '../controllers/articalController.js';
+import { allArtical, addArtical, addedArtical, updateArticle, articleUpdated, articleDelete } from '../controllers/articalController.js';
+import { setting, settingPost } from '../controllers/settingController.js';
 import imageUpload from '../middleware/imageUpload.js';
 
 const router = express.Router();
@@ -32,9 +33,16 @@ router.post('/admin/update-category/:id', isLoggedIn, isAdmin, updateCategoryPos
 router.delete('/admin/delete-category/:id', isLoggedIn, isAdmin, deleteCategory);
 
 // Artical Routes
-router.get('/admin/articales', allArtical);
-router.get('/admin/add-artical', addArtical);
-router.post('/admin/add-artical', isLoggedIn, imageUpload.single("image"), addedArtical);
+router.get('/admin/articales', isLoggedIn, isAdmin, allArtical);
+router.get('/admin/add-artical', isLoggedIn, isAdmin, addArtical);
+router.post('/admin/add-artical', isLoggedIn, isAdmin, imageUpload.single("image"), addedArtical);
+router.get('/admin/update-artical/:id', isLoggedIn, isAdmin, updateArticle);
+router.post('/admin/update-added/:id', isLoggedIn, isAdmin, imageUpload.single("image"), articleUpdated);
+router.delete('/admin/delete-article/:id', isLoggedIn, isAdmin, articleDelete);
+
+// Setting Route
+router.get('/admin/setting', isLoggedIn, isAdmin, setting);
+router.post('/admin/setting', isLoggedIn, isAdmin, imageUpload.single("logo"), settingPost);
 
 export default router;
 
