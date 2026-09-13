@@ -22,7 +22,7 @@ router.post('/admin/add-user', isLoggedIn, isAdmin, addUserPost);
 router.delete('/admin/delete-user/:id', isLoggedIn, isAdmin, deleteUser);
 router.get('/admin/update-user/:id', isLoggedIn, isAdmin, updateUser);
 router.post('/admin/update-user/:id', isLoggedIn, isAdmin, updatePost);
-router.get('/dashboard', isLoggedIn, dashboard);
+router.get('/admin/dashboard', isLoggedIn, dashboard);
 
 // Category Routes
 router.get('/admin/categories', isLoggedIn, isAdmin, getCategories);
@@ -44,8 +44,26 @@ router.delete('/admin/delete-article/:id', isLoggedIn, isAdmin, articleDelete);
 router.get('/admin/setting', isLoggedIn, isAdmin, setting);
 router.post('/admin/setting', isLoggedIn, isAdmin, imageUpload.single("logo"), settingPost);
 
+// Error Handling Page not found
+router.use(isLoggedIn, (req, res, next) => {
+    res.status(404).render('admin/404', {
+        message: `Page not found`,
+        layout: 'admin/layout',
+        role: req.role
+    });
+});
+
+// Error Handling 500, 401 etc...
+router.use(isLoggedIn, (err, req, res, next) => {
+    const status = err.status || 500;
+    const view = status == 500 ? 'admin/500' : 'admin/404';
+    res.status(status).render(view, {
+        message: `${err.message}` || 'Something went wrong',
+        layout: 'admin/layout',
+        role: req.role
+    });
+})
+
 export default router;
-
-
 
 // name show dashboard and hearder nav hide

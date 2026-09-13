@@ -2,16 +2,18 @@ import Setting from "../model/settingModel.js";
 import fs from 'fs';
 import path from "path";
 
-export const setting = async (req, res) => {
+// setting render
+export const setting = async (req, res, next) => {
     try {
         const setting = await Setting.findOne();
         res.render('admin/setting', { role: req.role, layout: 'admin/layout', setting });
     } catch (err) {
-        res.status(500).json({ message: `Internal server error : ${err}` });
+        next(err)
     }
 }
 
-export const settingPost = async (req, res) => {
+// update setting
+export const settingPost = async (req, res, next) => {
     try {
         const updateData = {
             title: req.body.title,
@@ -38,6 +40,6 @@ export const settingPost = async (req, res) => {
         }
         res.redirect('setting');
     } catch (err) {
-        res.status(500).json({ message: `Internal server error :${err}` });
+        next(err);
     }
 }

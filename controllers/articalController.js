@@ -3,31 +3,40 @@ import Category from "../model/categoryModel.js";
 import User from "../model/userModel.js";
 import fs from "fs";
 import path from "path";
+import errorHandling from '../utils/errorHandling.js';
 
 // Get artical 
-export const allArtical = async (req, res) => {
+export const allArtical = async (req, res, next) => {
     try {
-        const articales = await Artical.find().populate('author', 'fullname').populate('category', 'name');
+        if (!req.role == 'admin') return res.status(401).json({ message: `Unauthorized` });
+
+        const articales = await Artical.find()
+            .populate('author', 'fullname')
+            .populate('category', 'name');
+
+        if (!articales) {
+            return next(errorHandling('Article not found', 404));
+        };
+
         res.render('admin/artical', { layout: 'admin/layout', role: req.role, articales });
     } catch (err) {
-        res.status(500).json({ message: `Artical error : ${err}`, role: req.role });
+        next(err);
     }
 }
 
 // add Artical
-export const addArtical = async (req, res) => {
+export const addArtical = async (req, res, next) => {
     try {
         const categories = await Category.find();
         res.render('admin/artical/add-artical', { layout: 'admin/layout', role: req.role, categories });
     } catch (err) {
-        res.status(500).json({ message: `Add artical error :${err}` });
+        next(err);
     }
 }
 
 // added Artical
-export const addedArtical = async (req, res) => {
+export const addedArtical = async (req, res, next) => {
     try {
-        // res.send(req.body)
         const artical = await Artical.create({
             title: req.body.title,
             content: req.body.content,
@@ -37,15 +46,18 @@ export const addedArtical = async (req, res) => {
         })
         res.redirect("articales");
     } catch (err) {
-        res.status(500).json({ message: `Add artical error :${err}` });
+        next(err);
     }
 }
 
-// update Article
-export const updateArticle = async (req, res) => {
+// update Article page
+export const updateArticle = async (req, res, next) => {
     try {
         const categories = await Category.find();
-        const article = await Artical.findOne({ _id: req.params.id });
+        const article = await Artical.findById({ _id: req.params.id });
+        if (!article) {
+            return next(errorHandling('Article not found', 404));
+        }
         res.render('admin/artical/update-article', {
             layout: 'admin/layout',
             role: req.role,
@@ -53,17 +65,18 @@ export const updateArticle = async (req, res) => {
             article
         });
     } catch (err) {
-        res.status(500).json(`Update article error : ${err}`);
+        next(err);
     }
 }
 
 // Article Update
-export const articleUpdated = async (req, res) => {
+export const articleUpdated = async (req, res, next) => {
     try {
         const { title, content, category } = req.body
-
         const article = await Artical.findOne({ _id: req.params.id });
-        if (!article) return res.status(404).json({ message: `News not found` });
+        if (!article) {
+            return next(errorHandling('Article not found', 404));
+        }
 
         if (req.file) {
             const filePath = path.join("./public/uploads/", article.image);
@@ -73,35 +86,28 @@ export const articleUpdated = async (req, res) => {
             })
         }
 
-        if (req.role == 'admin') {
-            article.title = title;
-            article.content = content;
-            article.category = category;
-            article.image = req.file ? req.file.filename : article.image;
-
-        } else if (req.id == article.user) {
-            article.title = title;
-            article.content = content;
-            article.category = category;
-            article.image = req.file ? req.file.filename : article.image;
-
-        } else {
-            res.status(201).json({ message: `Your are not authorized` });
-        }
+        article.title = title;
+        article.content = content;
+        article.category = category;
+        article.image = req.file ? req.file.filename : article.image;
         await article.save();
+
         res.redirect('/api/admin/articales');
     } catch (err) {
-        res.status(500).json({ message: `Article updated error : ${err}` });
+        next(err);
     }
 }
 
 // article delete
-export const articleDelete = async (req, res) => {
+export const articleDelete = async (req, res, next) => {
     try {
+
         const article = await Artical.findById(req.params.id);
         const filePath = path.join("./public/uploads/", article.image);
 
-        if (!article) return res.status(404).json({ message: `News not found` });
+        if (!article) {
+            return next(errorHandling('Article not found', 404));
+        }
 
         if (article.image) {
             const filePath = path.join(
@@ -126,6 +132,6 @@ export const articleDelete = async (req, res) => {
         await Artical.findByIdAndDelete(req.params.id);
         res.status(200).json({ message: 'News deleted' });
     } catch (err) {
-        res.status(500).json(`Internal server error : ${err}`);
+        next(err);
     }
 }

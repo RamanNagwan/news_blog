@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser'
 
 // dashboard
-export const dashboard = (req, res) => {
+export const dashboard = (req, res, next) => {
     res.render('admin/dashboard', {
         layout: 'admin/layout',
         role: req.role
@@ -18,22 +18,17 @@ export const login = (req, res) => {
             layout: false,
         });
     } catch (err) {
-        res.status(500).json({ message: `Login error ${err}` });
+        next(err);
     }
 }
 
 // login
-export const loginPost = async (req, res) => {
+export const loginPost = async (req, res, next) => {
     try {
-        // await User.create({
-        //     fullname:"nagwan",
-        //     password:"123456",
-        //     username:"nagwan",
-        //     role:"admin"
-        // });
+
         const user = await User.findOne({ username: req.body.username });
 
-        if (!user) return res.status(404).json({ message: `User not found` });
+        if (!user) {return res.status(404).json({ message: `User not found` })};
 
         const isMatch = await bcrypt.compare(req.body.password, user.password);
 
@@ -58,38 +53,38 @@ export const loginPost = async (req, res) => {
         res.render('admin/dashboard', { layout: 'admin/layout', role: user.role });
 
     } catch (err) {
-        res.status(500).json({ message: `Login error : ${err}` });
+        next(err);
     }
 }
 
 // logOut 
-export const logout = (req, res) => {
+export const logout = (req, res, next) => {
     try {
         res.clearCookie("token");
         res.redirect('/api/login');
     } catch (err) {
-        res.status(500).json({ message: `Internal server error : ${err}` });
+        next(err)
     }
 }
 
-export const getUsers = async (req, res) => {
+export const getUsers = async (req, res, next) => {
     try {
         const users = await User.find();
         res.render('admin/users/index', { layout: "admin/layout", users, role: req.role });
     } catch (err) {
-        res.status(500), json({ message: `Internal server error ${err}` })
+        next(err)
     }
 }
 
-export const addUser = (req, res) => {
+export const addUser = (req, res, next) => {
     try {
         res.render('admin/users/create', { layout: "admin/layout", role: req.role });
     } catch (err) {
-        res.status(500).json({ message: `Internal server error ${err}` });
+        next(err);
     }
 }
 
-export const addUserPost = (req, res) => {
+export const addUserPost = (req, res, next) => {
     try {
         const user = User.create(req.body);
         if (!user) return res.status(204).json({ message: `User not save` });
@@ -98,33 +93,36 @@ export const addUserPost = (req, res) => {
             role: req.role
         });
     } catch (err) {
-        res.status(500).json({ message: `Internal server error ${err}` });
+        next(err)
     }
 }
 
-export const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res, next) => {
     try {
-        const user = await User.findByIdAndDelete(req.params.id);
+        await User.findByIdAndDelete(req.params.id);
         res.sendStatus(200);
     } catch (err) {
-        res.status(500).json({ message: `Error deleteing user ${err}` })
+        next(err);
     }
 }
 
-export const updateUser = async (req, res) => {
+export const updateUser = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id);
-        if (!user) res.status(404).json({ message: 'User not found' });
+        if (!user){
+            return next(errorHandling('User not found', 404));
+        }
+        
         res.render('admin/users/update', {
             layout: 'admin/layout',
             user
         })
     } catch (err) {
-        res.status(500).json({ message: `Error updating user form ${err}` });
+        next(err)
     }
 }
 
-export const updatePost = async (req, res) => {
+export const updatePost = async (req, res, next) => {
     try {
         const { fullname, password, role } = req.body;
         const hasPassword = await bcrypt.hash(password, 10);
@@ -135,6 +133,6 @@ export const updatePost = async (req, res) => {
         });
         res.redirect('/api/admin/users');
     } catch (err) {
-        res.status(500).json({ message: `Error update user` });
+        next(err)
     }
 } 
