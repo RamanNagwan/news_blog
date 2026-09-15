@@ -2,7 +2,9 @@ import { json } from "express";
 import User from "../model/userModel.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import cookieParser from 'cookie-parser'
+import cookieParser from 'cookie-parser';
+import { validationResult } from 'express-validator';
+import errorHandling from "../utils/errorHandling.js";
 
 // dashboard
 export const dashboard = (req, res, next) => {
@@ -16,6 +18,7 @@ export const login = (req, res) => {
     try {
         res.render('admin/login', {
             layout: false,
+            errors: []
         });
     } catch (err) {
         next(err);
@@ -25,10 +28,16 @@ export const login = (req, res) => {
 // login
 export const loginPost = async (req, res, next) => {
     try {
-
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.render('admin/login', {
+                layout: false,
+                errors: errors.array()
+            })
+        }
         const user = await User.findOne({ username: req.body.username });
 
-        if (!user) {return res.status(404).json({ message: `User not found` })};
+        if (!user) { return res.status(404).json({ message: `User not found` }) };
 
         const isMatch = await bcrypt.compare(req.body.password, user.password);
 
@@ -109,10 +118,10 @@ export const deleteUser = async (req, res, next) => {
 export const updateUser = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id);
-        if (!user){
+        if (!user) {
             return next(errorHandling('User not found', 404));
         }
-        
+
         res.render('admin/users/update', {
             layout: 'admin/layout',
             user

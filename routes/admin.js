@@ -7,12 +7,14 @@ import { addCategory, addedcategory, deleteCategory, getCategories, updateCatego
 import { allArtical, addArtical, addedArtical, updateArticle, articleUpdated, articleDelete } from '../controllers/articalController.js';
 import { setting, settingPost } from '../controllers/settingController.js';
 import imageUpload from '../middleware/imageUpload.js';
+import {articleValidate, categoryValidate, loginValidate} from '../middleware/validatorMiddleware.js';
+
 
 const router = express.Router();
 
 // Login and Logout 
 router.get('/login', login);
-router.post('/login', loginPost);
+router.post('/login', loginValidate, loginPost);
 router.get('/logout', logout);
 
 // User Routes
@@ -27,17 +29,17 @@ router.get('/admin/dashboard', isLoggedIn, dashboard);
 // Category Routes
 router.get('/admin/categories', isLoggedIn, isAdmin, getCategories);
 router.get('/admin/add-category', isLoggedIn, isAdmin, addedcategory);
-router.post('/admin/add-category', isLoggedIn, isAdmin, addCategory);
+router.post('/admin/add-category', isLoggedIn, isAdmin,categoryValidate, addCategory);
 router.get('/admin/update-category/:id', isLoggedIn, isAdmin, updateCategory);
-router.post('/admin/update-category/:id', isLoggedIn, isAdmin, updateCategoryPost);
+router.post('/admin/update-category/:id', isLoggedIn, isAdmin,categoryValidate, updateCategoryPost);
 router.delete('/admin/delete-category/:id', isLoggedIn, isAdmin, deleteCategory);
 
 // Artical Routes
 router.get('/admin/articales', isLoggedIn, isAdmin, allArtical);
 router.get('/admin/add-artical', isLoggedIn, isAdmin, addArtical);
-router.post('/admin/add-artical', isLoggedIn, isAdmin, imageUpload.single("image"), addedArtical);
+router.post('/admin/add-artical', isLoggedIn, isAdmin,articleValidate, imageUpload.single("image"), addedArtical);
 router.get('/admin/update-artical/:id', isLoggedIn, isAdmin, updateArticle);
-router.post('/admin/update-added/:id', isLoggedIn, isAdmin, imageUpload.single("image"), articleUpdated);
+router.post('/admin/update-added/:id', isLoggedIn, isAdmin,articleValidate, imageUpload.single("image"), articleUpdated);
 router.delete('/admin/delete-article/:id', isLoggedIn, isAdmin, articleDelete);
 
 // Setting Route

@@ -19,9 +19,9 @@ const categorySchema = mongoose.Schema({
 
 const Category = mongoose.model('Category', categorySchema);
 
-categorySchema.pre('validate', async function () {
-    const slug = this.slug = slugify(this.name, { lower: true });
-    console.log(slug)
+categorySchema.pre('validate', async function (next) {
+   this.slug = slugify(this.name, { lower: true });
+   next()
 });
 
 

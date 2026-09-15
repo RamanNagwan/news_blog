@@ -4,6 +4,7 @@ import User from "../model/userModel.js";
 import fs from "fs";
 import path from "path";
 import errorHandling from '../utils/errorHandling.js';
+import { validationResult } from "express-validator";
 
 // Get artical 
 export const allArtical = async (req, res, next) => {
@@ -28,16 +29,26 @@ export const allArtical = async (req, res, next) => {
 export const addArtical = async (req, res, next) => {
     try {
         const categories = await Category.find();
-        res.render('admin/artical/add-artical', { layout: 'admin/layout', role: req.role, categories });
+        res.render(
+            'admin/artical/add-artical',
+            { layout: 'admin/layout', role: req.role, categories, errors: [] }
+        );
     } catch (err) {
         next(err);
     }
 }
 
-// added Artical
+//POST added Artical
 export const addedArtical = async (req, res, next) => {
     try {
-        const artical = await Artical.create({
+        const categories = await Category.find();
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.render('admin/artical/add-artical', { layout: 'admin/layout', role: req.role, categories, errors: errors.array() })
+        }
+
+        await Artical.create({
             title: req.body.title,
             content: req.body.content,
             category: req.body.category,
@@ -62,7 +73,8 @@ export const updateArticle = async (req, res, next) => {
             layout: 'admin/layout',
             role: req.role,
             categories,
-            article
+            article,
+            errors: []
         });
     } catch (err) {
         next(err);
@@ -72,8 +84,20 @@ export const updateArticle = async (req, res, next) => {
 // Article Update
 export const articleUpdated = async (req, res, next) => {
     try {
-        const { title, content, category } = req.body
+        const categories = await Category.find();
         const article = await Artical.findOne({ _id: req.params.id });
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.render('admin/artical/update-article', {
+                layout: 'admin/layout',
+                role: req.role,
+                categories,
+                article,
+                errors: errors.array()
+            })
+        }
+        const { title, content, category } = req.body
         if (!article) {
             return next(errorHandling('Article not found', 404));
         }
