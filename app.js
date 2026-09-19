@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import router from './routes/admin.js';
 import expressEjsLayouts from 'express-ejs-layouts';
 import cookieParser from 'cookie-parser';
+import frontendRouter from './routes/frontend.js';
 
 //dotenv config
 env.config()
@@ -26,10 +27,12 @@ app.use(express.json());
 app.use(cookieParser());
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, "public")));
+// app.use(express.static("public"));
 app.use(expressEjsLayouts);
 
 //Admin Router
 app.use('/api/', router);
+app.use('/', frontendRouter);
 
 app.listen(port, () => {
     console.log(`http://localhost:${port}`);
