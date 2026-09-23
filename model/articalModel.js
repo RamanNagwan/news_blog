@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 
 const scheam = mongoose.Schema({
@@ -29,6 +30,8 @@ const scheam = mongoose.Schema({
         default: Date.now()
     }
 })
+
+scheam.plugin(mongoosePaginate);
 
 const Artical = mongoose.model("articales", scheam);
 export default Artical;

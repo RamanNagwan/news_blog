@@ -4,11 +4,21 @@ import User from '../model/userModel.js';
 
 export const homePage = async (req, res, next) => {
     try {
-        const articles = await Artical.find()
-            .populate('category', { 'name': 1, 'slug': 1 })
-            .populate('author', 'fullname');
 
-        res.render('index', { articles });
+        const options = {
+            page: 1, limit: 2, populate: [
+                { path: 'category', select: 'name slug' },
+                { path: 'author', select: 'fullname' }
+            ]
+        }
+        const pagination = await Artical.paginate({}, options);
+        // res.json(articles);
+
+        // const articles = await Artical.find()
+        //     .populate('category', { 'name': 1, 'slug': 1 })
+        //     .populate('author', 'fullname');
+
+        res.render('index', { pagination });
     } catch (err) {
         next(err)
     }
@@ -85,7 +95,7 @@ export const search = async (req, res) => {
                 { title: { $regex: search, $options: 'i' } },
                 { content: { $regex: search, $options: 'i' } }
             ]
-        }).populate('category', { 'name': 1, 'slug': 1 }).populate('author','fullname');
+        }).populate('category', { 'name': 1, 'slug': 1 }).populate('author', 'fullname');
         if (search.length > 0) {
             res.render('search', { searchNews });
         } else {
