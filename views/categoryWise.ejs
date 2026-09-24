@@ -1,8 +1,9 @@
 <div class="col-md-8">
     <!-- post-container -->
     <div class="post-container">
-        <h2 class="page-heading">Category Name : <%=categoryName.name %></h2>
-        <% categoriesNews.forEach((categoryNews)=>{ %>
+        <h2 class="page-heading">Category Name : <%=categoryName.name %>
+        </h2>
+        <% const categoriesNews=paginate.docs; categoriesNews.forEach((categoryNews)=>{ %>
             <div class="post-content">
                 <div class="row">
                     <div class="col-md-4">
@@ -43,19 +44,23 @@
                 </div>
             </div>
             <% }) %>
+
                 <nav>
                     <ul class="pagination">
-                        <li class="page-item disabled">
-                            <a class="page-link">Previous</a>
+                        <li class="page-item <%= paginate.hasPrevPage ? '' : 'disabled' %>">
+                            <a class="page-link"
+                                href="/category/<%=categoryName._id%>/?page=<%=paginate.prevPage %>">Previous</a>
                         </li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item active">
-                            <a class="page-link" href="#" aria-current="page">2</a>
-                        </li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Next</a>
-                        </li>
+                        <% for(let i=1; i <=paginate.totalPages; i++){ %>
+                            <li class="page-item <%=paginate.page == i ? 'active' : '' %> "><a class="page-link"
+                                    href="/category/<%=categoryName._id%>/?page=<%=i%>">
+                                    <%=i %>
+                                </a></li>
+                            <% } %>
+                                <li class="page-item">
+                                    <a class="page-link <%= paginate.hasNextPage ? '':'disabled' %>"
+                                        href="/category/<%=categoryName._id%>/?page=<%=paginate.nextPage %>">Next</a>
+                                </li>
                     </ul>
                 </nav>
     </div><!-- /post-container -->

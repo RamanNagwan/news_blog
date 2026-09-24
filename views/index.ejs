@@ -8,7 +8,7 @@
             <div class="col-md-8">
                 <!-- post-container -->
                 <div class="post-container">
-                    <%  const articles = pagination.docs; articles.forEach((article)=>{%>
+                    <% const articles=paginate.docs; articles.forEach((article)=>{%>
                         <div class="post-content">
                             <div class="row">
                                 <div class="col-md-4">
@@ -50,19 +50,20 @@
                             </div>
                         </div>
                         <% }) %>
-
-
                             <nav>
                                 <ul class="pagination">
-                                    <li class="page-item disabled">
-                                        <a class="page-link">Previous</a>
-                                    </li> 
-                                    <% for(let i = 1; i <=pagination.totalPages; i++){ %>
-                                    <li class="page-item"><a class="page-link" href="#"><%=i %></a></li>
-                                   <% } %>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#">Next</a>
+                                    <li class="page-item <%= paginate.hasPrevPage ? '' : 'disabled' %>">
+                                        <a class="page-link" href="/?page=<%=paginate.prevPage %>"  >Previous</a>
                                     </li>
+                                    <% for(let i=1; i <=paginate.totalPages; i++){ %>
+                                        <li class="page-item <%=paginate.page == i ? 'active' : '' %>"><a class="page-link" href="/?page=<%=i%>">
+                                                <%=i %>
+                                            </a></li>
+                                        <% } %>
+                                            <li class="page-item">
+                                                <a class="page-link <%= paginate.hasNextPage ? '':'disabled' %>"
+                                                    href="/?page=<%=paginate.nextPage %>">Next</a>
+                                            </li>
                                 </ul>
                             </nav>
                 </div>

@@ -1,24 +1,20 @@
+import path from 'path';
 import Artical from '../model/articalModel.js';
 import Category from '../model/categoryModel.js';
 import User from '../model/userModel.js';
+import pagination from '../utils/pagination.js';
 
 export const homePage = async (req, res, next) => {
     try {
+        let page = req.query.page
+        let limit = 2
+        let populate = [
+            { path: 'category', select: 'name slug' },
+            { path: 'author', select: 'fullname' }
+        ]
 
-        const options = {
-            page: 1, limit: 2, populate: [
-                { path: 'category', select: 'name slug' },
-                { path: 'author', select: 'fullname' }
-            ]
-        }
-        const pagination = await Artical.paginate({}, options);
-        // res.json(articles);
-
-        // const articles = await Artical.find()
-        //     .populate('category', { 'name': 1, 'slug': 1 })
-        //     .populate('author', 'fullname');
-
-        res.render('index', { pagination });
+        const paginate = await pagination(Artical, page, limit, populate)
+        res.render('index', { paginate });
     } catch (err) {
         next(err)
     }
@@ -54,16 +50,19 @@ export const singleCategory = async (req, res) => {
 
 export const categoriesWise = async (req, res) => {
     try {
+        const findBy = { 'category': req.params.id };
+        const page = req.query.page;
+        const limit = 1;
+        const populate = [
+            { path: 'category', select: 'name slug' },
+            { path: 'author', select: 'fullname' }
+        ]
 
 
-        // categoryWise news
-        const categoryId = req.params.id;
-        const categoriesNews = await Artical.find({ 'category': categoryId })
-            .populate('category', { 'name': 1, 'slug': 1 })
-            .populate('author', 'fullname');
-        const categoryName = await Category.findOne({ '_id': categoryId });
+        const paginate = await pagination(Artical, page, limit, populate, findBy);
+        const categoryName = await Category.findOne({ '_id': req.params.id });
 
-        res.render('categoryWise', { categoriesNews, categoryName });
+        res.render('categoryWise', { paginate, categoryName });
     } catch (err) {
         res.send(`Recent page error ${err}`);
     }
