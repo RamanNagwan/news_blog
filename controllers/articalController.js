@@ -19,7 +19,7 @@ export const allArtical = async (req, res, next) => {
             return next(errorHandling('Article not found', 404));
         };
 // res.json(articales);
-        res.render('admin/artical', { layout: 'admin/layout', role: req.role, articales });
+        res.render('admin/artical/index', { layout: 'admin/layout', role: req.role, articales });
     } catch (err) {
         next(err);
     }

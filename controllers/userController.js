@@ -5,12 +5,28 @@ import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 import { validationResult } from 'express-validator';
 import errorHandling from "../utils/errorHandling.js";
+import Category from "../model/categoryModel.js";
+import Artical from "../model/articalModel.js";
 
 // dashboard
-export const dashboard = (req, res, next) => {
+export const dashboard = async (req, res, next) => {
+    let userCount;
+    let articleCount;
+    const categoryCount = await Category.countDocuments();
+    if (req.role == 'author') {
+        userCount = await User.countDocuments({ role: 'author' });
+        articleCount = await Artical.countDocuments({ _id: req.id })
+    } else {
+        userCount = await User.countDocuments();
+        articleCount = await Artical.countDocuments();
+    }
+
     res.render('admin/dashboard', {
         layout: 'admin/layout',
-        role: req.role
+        role: req.role,
+        userCount,
+        categoryCount,
+        articleCount
     })
 }
 // login render
@@ -58,8 +74,25 @@ export const loginPost = async (req, res, next) => {
             sameSite: "strict",
             maxAge: 24 * 60 * 60 * 1000
         });
-
-        res.render('admin/dashboard', { layout: 'admin/layout', role: user.role });
+        
+        let userCount;
+        let articleCount;
+        const categoryCount = await Category.countDocuments();
+        if (req.role == 'author') {
+            userCount = await User.countDocuments({ role: 'author' });
+            articleCount = await Artical.countDocuments({ _id: req.id })
+        } else {
+            userCount = await User.countDocuments();
+            articleCount = await Artical.countDocuments();
+        }
+        res.render('admin/dashboard',
+            {
+                layout: 'admin/layout',
+                role: user.role,
+                userCount,
+                categoryCount,
+                articleCount
+            });
 
     } catch (err) {
         next(err);

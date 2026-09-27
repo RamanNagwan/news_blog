@@ -36,12 +36,12 @@ router.post('/admin/update-category/:id', isLoggedIn, isAdmin, categoryValidate,
 router.delete('/admin/delete-category/:id', isLoggedIn, isAdmin, deleteCategory);
 
 // Artical Routes
-router.get('/admin/articales', isLoggedIn, isAdmin, allArtical);
-router.get('/admin/add-artical', isLoggedIn, isAdmin, addArtical);
-router.post('/admin/add-artical', isLoggedIn, isAdmin, articleValidate, imageUpload.single("image"), addedArtical);
-router.get('/admin/update-artical/:id', isLoggedIn, isAdmin, updateArticle);
-router.post('/admin/update-added/:id', isLoggedIn, isAdmin, articleValidate, imageUpload.single("image"), articleUpdated);
-router.delete('/admin/delete-article/:id', isLoggedIn, isAdmin, articleDelete);
+router.get('/admin/articales', isLoggedIn, allArtical);
+router.get('/admin/add-artical', isLoggedIn, addArtical);
+router.post('/admin/add-artical', isLoggedIn, articleValidate, imageUpload.single("image"), addedArtical);
+router.get('/admin/update-artical/:id', isLoggedIn,  updateArticle);
+router.post('/admin/update-added/:id', isLoggedIn, articleValidate, imageUpload.single("image"), articleUpdated);
+router.delete('/admin/delete-article/:id', isLoggedIn, articleDelete);
 
 // Setting Route
 router.get('/admin/setting', isLoggedIn, isAdmin, setting);
