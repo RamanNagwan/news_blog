@@ -7,7 +7,8 @@ import { addCategory, addedcategory, deleteCategory, getCategories, updateCatego
 import { allArtical, addArtical, addedArtical, updateArticle, articleUpdated, articleDelete } from '../controllers/articalController.js';
 import { setting, settingPost } from '../controllers/settingController.js';
 import imageUpload from '../middleware/imageUpload.js';
-import {articleValidate, categoryValidate, loginValidate} from '../middleware/validatorMiddleware.js';
+import { articleValidate, categoryValidate, loginValidate } from '../middleware/validatorMiddleware.js';
+import { comments, addComment, updatedComment } from '../controllers/commentController.js';
 
 
 const router = express.Router();
@@ -29,22 +30,26 @@ router.get('/admin/dashboard', isLoggedIn, dashboard);
 // Category Routes
 router.get('/admin/categories', isLoggedIn, isAdmin, getCategories);
 router.get('/admin/add-category', isLoggedIn, isAdmin, addedcategory);
-router.post('/admin/add-category', isLoggedIn, isAdmin,categoryValidate, addCategory);
+router.post('/admin/add-category', isLoggedIn, isAdmin, categoryValidate, addCategory);
 router.get('/admin/update-category/:id', isLoggedIn, isAdmin, updateCategory);
-router.post('/admin/update-category/:id', isLoggedIn, isAdmin,categoryValidate, updateCategoryPost);
+router.post('/admin/update-category/:id', isLoggedIn, isAdmin, categoryValidate, updateCategoryPost);
 router.delete('/admin/delete-category/:id', isLoggedIn, isAdmin, deleteCategory);
 
 // Artical Routes
 router.get('/admin/articales', isLoggedIn, isAdmin, allArtical);
 router.get('/admin/add-artical', isLoggedIn, isAdmin, addArtical);
-router.post('/admin/add-artical', isLoggedIn, isAdmin,articleValidate, imageUpload.single("image"), addedArtical);
+router.post('/admin/add-artical', isLoggedIn, isAdmin, articleValidate, imageUpload.single("image"), addedArtical);
 router.get('/admin/update-artical/:id', isLoggedIn, isAdmin, updateArticle);
-router.post('/admin/update-added/:id', isLoggedIn, isAdmin,articleValidate, imageUpload.single("image"), articleUpdated);
+router.post('/admin/update-added/:id', isLoggedIn, isAdmin, articleValidate, imageUpload.single("image"), articleUpdated);
 router.delete('/admin/delete-article/:id', isLoggedIn, isAdmin, articleDelete);
 
 // Setting Route
 router.get('/admin/setting', isLoggedIn, isAdmin, setting);
 router.post('/admin/setting', isLoggedIn, isAdmin, imageUpload.single("logo"), settingPost);
+
+// Comment Route
+router.get('/admin/comment', isLoggedIn, comments);
+router.put('/admin/comment-update/:id', updatedComment);
 
 // Error Handling Page not found
 router.use(isLoggedIn, (req, res, next) => {

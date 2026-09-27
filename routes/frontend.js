@@ -1,6 +1,7 @@
 import express from 'express';
 import { authorWise, categoriesWise, homePage, search, singleArticle, singleCategory } from '../controllers/siteController.js';
 import localCommonData from '../middleware/localCommonDataMiddleware.js';
+import { addComment } from '../controllers/commentController.js';
 
 
 const frontendRouter = express.Router();
@@ -10,6 +11,7 @@ frontendRouter.get('/', homePage);
 frontendRouter.get('/single-news/:id', singleArticle);
 frontendRouter.get('/single-category/:id', singleCategory);
 frontendRouter.get('/category/:id', categoriesWise);
-frontendRouter.get('/author/:id', authorWise)
-frontendRouter.get('/search' , search)
+frontendRouter.get('/author/:id', authorWise);
+frontendRouter.get('/search', search);
+frontendRouter.post('/comment/:id', addComment);
 export default frontendRouter;

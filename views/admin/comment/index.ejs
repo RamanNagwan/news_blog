@@ -1,0 +1,64 @@
+<div id="admin-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="admin-heading"><i class="fa fa-comments"></i> Comments Management</h1>
+            </div>
+            <div class="col-md-12">
+                <div id="commentTable"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    const commentsData = '<%-JSON.stringify(comments)%>'
+    document.addEventListener('DOMContentLoaded', () => {
+        const table = new Tabulator('#commentTable', {
+            data: commentsData,
+            layout: 'fitColumns',
+            responsiveLayout: 'hide',
+            pagination: true,
+            paginationMode: 'local',
+            paginationSize: 3,
+            paginationSizeSelector: [25, 50, 100],
+            columns: [
+                { title: 'S.No', formatter: 'rownum', hozAlign: "center", window: "6%" },
+                { title: "Name", field: "name", hozAlign: 'center' },
+                { title: 'Email', field: "email", hozAlign: "center" },
+                { title: "Comment", field: "comment", hozAlign: "center" },
+                { title: "Status", field: "status", hozAlign: "center" },
+                {
+                    title: "Action", formatter: function (cell, formatterParams, onRendered) {
+                        const value = cell.getData();
+                        return `<select  class="form-select">
+                            <option value="pending" ${value.status == "pendding" ? "selected" : ""} >Pending</option>
+                            <option value="approved" ${value.status == "approved" ? "selected" : ""} >Approved</option>
+                            <option value="rejected" ${value.status == "rejected" ? "selected" : ""}>Rejected</option>
+                            </select> 
+                            <button class="btn btn-primary"  onclick="statusUpdate('${cell.getData()._id}',this.previousElementSibling.value)">Update</button>`
+                    }
+                }
+            ]
+        })
+    })
+
+    async function statusUpdate(id, status) {
+        // const id = id
+        console.log(id, status);
+        const response = await fetch(`/api/admin/comment-update/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: status })
+        })
+        const data = await response.json();
+
+        if (data.response === 'ok') {
+            window.location.reload();
+            alert(data.message);
+        }
+    }
+
+</script>

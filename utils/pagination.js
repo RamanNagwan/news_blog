@@ -1,10 +1,11 @@
 
-const pagination = (model, page, limit, populate = [],findBy={}) => {
-      const filter = findBy ?  findBy : {};
+const pagination = (model, page, limit, populate = [], findBy = {}) => {
+      const filter = findBy ? findBy : {};
       const options = {
             page: parseInt(page) || 1,
             limit: parseInt(limit) || 5,
-            populate 
+            populate,
+            sort: { cateatedAt: -1 }
       }
 
       return model.paginate(filter, options);

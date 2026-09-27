@@ -3,6 +3,8 @@ import Artical from '../model/articalModel.js';
 import Category from '../model/categoryModel.js';
 import User from '../model/userModel.js';
 import pagination from '../utils/pagination.js';
+import { populate } from 'dotenv';
+import Comment from '../model/commentModel.js';
 
 export const homePage = async (req, res, next) => {
     try {
@@ -27,7 +29,9 @@ export const singleArticle = async (req, res) => {
             .populate('category', { 'name': 1, 'slug': 1 })
             .populate('author', 'fullname');
 
-        res.render('singleNews', { singleNews });
+        const comments = await Comment.find({ status: 'approved' });
+
+        res.render('singleNews', { singleNews, comments });
     } catch (err) {
         res.send(`Category error : ${err}`);
     }
@@ -56,8 +60,7 @@ export const categoriesWise = async (req, res) => {
         const populate = [
             { path: 'category', select: 'name slug' },
             { path: 'author', select: 'fullname' }
-        ]
-
+        ];
 
         const paginate = await pagination(Artical, page, limit, populate, findBy);
         const categoryName = await Category.findOne({ '_id': req.params.id });
@@ -70,16 +73,21 @@ export const categoriesWise = async (req, res) => {
 
 export const authorWise = async (req, res) => {
     try {
-
-        // author wise news
         const authorId = req.params.id
-        const authorNews = await Artical.find({ 'author': authorId })
-            .populate('category', { 'name': 1, 'slug': 1 })
-            .populate('author', 'fullname')
-            .sort({ createdAt: -1 });
+        const page = req.query.page;
+        const limit = 2;
+        const populate = [
+            { path: 'category', select: 'name slug' },
+            { path: 'author', select: 'fullname' }
+        ];
+        const findBy = {
+            'author': authorId
+        };
+
+        const paginate = await pagination(Artical, page, limit, populate, findBy);
         const authorName = await User.findOne({ _id: authorId });
 
-        res.render('authorWise', { authorNews, authorName });
+        res.render('authorWise', { paginate, authorName });
     } catch (err) {
         res.status(400).json({ 'message': `Author wise error :${err}` });
     }
